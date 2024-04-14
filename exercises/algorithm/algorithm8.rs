@@ -1,8 +1,8 @@
 /*
 	queue
-	This question requires you to use queues to implement the functionality of the stac
+	This question requires you to use queues to implement the functionality of the stack
 */
-// I AM NOT DONE
+
 
 #[derive(Debug)]
 pub struct Queue<T> {
@@ -55,27 +55,42 @@ impl<T> Default for Queue<T> {
 pub struct myStack<T>
 {
 	//TODO
-	q1:Queue<T>,
-	q2:Queue<T>
+    last_push: usize,
+	q: [Queue<T>; 2]
 }
+
 impl<T> myStack<T> {
     pub fn new() -> Self {
         Self {
 			//TODO
-			q1:Queue::<T>::new(),
-			q2:Queue::<T>::new()
+			last_push: 0,
+            q: [Queue::<T>::new(), Queue::<T>::new()],
         }
     }
     pub fn push(&mut self, elem: T) {
         //TODO
+        self.q[self.last_push].enqueue(elem);
     }
     pub fn pop(&mut self) -> Result<T, &str> {
         //TODO
-		Err("Stack is empty")
+        let mut other = (self.last_push + 1) % 2;
+
+        if self.q[self.last_push].is_empty() && !self.q[other].is_empty() {
+            std::mem::swap(&mut self.last_push, &mut other);
+        }
+
+        while self.q[self.last_push].size() > 1 {
+            let elem = self.q[self.last_push].dequeue().unwrap();
+            self.q[other].enqueue(elem);
+        }
+
+        self.q[self.last_push].dequeue().map_err(|e| {
+            "Stack is empty"
+        })
     }
     pub fn is_empty(&self) -> bool {
 		//TODO
-        true
+        self.q[0].is_empty() && self.q[1].is_empty()
     }
 }
 

@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -29,7 +28,7 @@ where
     }
 
     pub fn len(&self) -> usize {
-        self.count
+        self.items.len() - 1
     }
 
     pub fn is_empty(&self) -> bool {
@@ -38,6 +37,24 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        self.items.push(value);
+
+        let mut parent = self.parent_idx(self.items.len() - 1);
+        while parent != 0 {
+            let mut child1 = self.left_child_idx(parent);
+            let mut child2 = self.right_child_idx(parent);
+            if child2 < self.items.len()
+                && (self.comparator)(&self.items[child2], &self.items[child1]) {
+                std::mem::swap(&mut child1, &mut child2);
+            }
+            if (self.comparator)(&self.items[child1], &self.items[parent]) {
+                // std::mem::swap(&mut self.items[child1], &mut self.items[parent]);
+                self.items.swap(child1, parent);
+            } else {
+                break;
+            }
+            parent /= 2;
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -56,9 +73,9 @@ where
         self.left_child_idx(idx) + 1
     }
 
-    fn smallest_child_idx(&self, idx: usize) -> usize {
+    fn smallest_child_idx(&self, _idx: usize) -> usize {
         //TODO
-		0
+		1
     }
 }
 
@@ -85,7 +102,30 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+        if self.items.len() <= 1 {
+            return None;
+        }
+
+        let last_idx = self.items.len() - 1;
+        self.items.swap(1, last_idx);
+		let ret = self.items.pop();
+
+        let mut parent = 1;
+        while self.left_child_idx(parent) < self.items.len() {
+            let mut child1 = self.left_child_idx(parent);
+            let mut child2 = self.right_child_idx(parent);
+            if child2 < self.items.len() && (self.comparator)(&self.items[child2], &self.items[child1]) {
+                std::mem::swap(&mut child1, &mut child2);
+            }
+            if (self.comparator)(&self.items[child1], &self.items[parent]) {
+                self.items.swap(parent, child1);
+            } else {
+                break;
+            }
+            parent = child1;
+        }
+
+        ret
     }
 }
 

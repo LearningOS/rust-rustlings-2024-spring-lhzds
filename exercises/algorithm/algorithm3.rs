@@ -3,11 +3,48 @@
 	This problem requires you to implement a sorting algorithm
 	you can use bubble sorting, insertion sorting, heap sorting, etc.
 */
-// I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+
+fn merge_sort<T: std::cmp::PartialOrd + Copy>(array: &mut [T]) {
+    if array.len() <= 1 {
+        return;
+    }
+
+    let mid = (0 + array.len()) >> 1;
+    merge_sort(&mut array[0..mid]);
+    merge_sort(&mut array[mid..]);
+    
+    let mut buf = Vec::with_capacity(array.len());
+    
+    let mut a = 0;
+    let mut b = mid;
+    while a < mid && b < array.len() {
+        if array[a] < array[b] {
+            buf.push(array[a]);
+            a += 1;
+        } else {
+            buf.push(array[b]);
+            b += 1;
+        }
+    }
+    while a < mid {
+        buf.push(array[a]);
+        a += 1;
+    }
+    while b < array.len() {
+        buf.push(array[b]);
+        b += 1;
+    }
+
+    for (i, elem) in array.iter_mut().enumerate() {
+        *elem = buf[i];
+    }
 }
+
+fn sort<T: std::cmp::PartialOrd + Copy>(array: &mut [T]){
+    merge_sort(array);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
