@@ -1,8 +1,8 @@
 /*
 	graph
-	This problem requires you to implement a basic graph functio
+	This problem requires you to implement a basic graph function
 */
-// I AM NOT DONE
+
 
 use std::collections::{HashMap, HashSet};
 use std::fmt;
@@ -30,6 +30,18 @@ impl Graph for UndirectedGraph {
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
+        let (from_node, to_node, weight) = edge;
+        let (from_node, to_node, weight) = edge;
+        self.add_node(from_node);
+        self.add_node(to_node);
+
+        let adj_tab = self.adjacency_table_mutable();
+        if let Some(adj_edges) = adj_tab.get_mut(from_node) {
+            adj_edges.push((to_node.to_string(), weight));
+        }
+        if let Some(adj_edges) = adj_tab.get_mut(to_node) {
+            adj_edges.push((from_node.to_string(), weight));
+        }
     }
 }
 pub trait Graph {
@@ -38,11 +50,15 @@ pub trait Graph {
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
     fn add_node(&mut self, node: &str) -> bool {
         //TODO
-		true
+        if self.contains(node) {
+            return false;
+        }
+		let adj_tab = self.adjacency_table_mutable();
+        adj_tab.insert(node.to_string(), vec![]);
+        true
     }
-    fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
-    }
+    fn add_edge(&mut self, edge: (&str, &str, i32));
+    
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()
     }
@@ -69,6 +85,7 @@ mod test_undirected_graph {
         graph.add_edge(("a", "b", 5));
         graph.add_edge(("b", "c", 10));
         graph.add_edge(("c", "a", 7));
+        println!("{:?}", graph.adjacency_table());
         let expected_edges = [
             (&String::from("a"), &String::from("b"), 5),
             (&String::from("b"), &String::from("a"), 5),
